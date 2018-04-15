@@ -9,9 +9,11 @@ function clean() {
         if [[ ! -d "${file}" ]] ; then
             if [[ -L "${file}" ]] ; then
                 rm -f "${file}"
+                echo "removed link: ${file}"
                 echo "removed link: ${file}" >> ${output}
             elif [[ -f "${file}" ]] ; then
                 shred -u "${file}"
+                echo "removed file: ${file}"
                 echo "removed file: ${file}" >> ${output}
             fi
         else
@@ -27,10 +29,16 @@ function clean() {
 
 function main() {
     path=$1
+
     if [[ "$path" = "" ]]; then
         gdialog --msgbox "Select file or directory!"
         echo "Finished."
         exit 0
+    fi
+
+    size=${#path}
+    if [[ "${path:$size - 1}" == '/' ]]; then
+        path="${path::$size - 1}"
     fi
 
     gdialog --title "Warning" --center --stdout --yesno \
