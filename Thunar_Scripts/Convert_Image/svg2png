@@ -1,0 +1,77 @@
+#!/bin/bash
+# Converte arquivo imagem SVG para PNG
+# Requer Zenity e Inkscape
+
+arg="$@"    # argumentos de entrada
+today=$(date +%Y-%m-%d)
+ext_original=".SVG"
+
+# gdialog --title "Script" --center --stdout --yesno \
+# "Executar: svg2png" \
+# 100 100
+
+# if [[ "$?" != "0" ]]; then
+#       exit 0
+# fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-svg2png-$today"
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-svg2png-$today"
+    gdialog --msgbox "Select Files!"
+    exit 0
+fi
+
+# Percorrendo os argumentos de entrada
+for arg
+do
+    size=${#arg}
+    count=$size
+    echo "Convert: $arg" >> /tmp/"log-svg2png-$today"
+
+    # Procurando extensão
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '.' ]]; then
+            break;
+        fi
+    done
+
+    # Checar extensão
+    ext_temp=$(echo "${arg:count:size - count}" | tr '[:lower:]' '[:upper:]')
+    if [[ $ext_temp != $ext_original ]]; then
+        echo "Invalid image file!" >> /tmp/"log-svg2png-$today"
+        gdialog --msgbox "Invalid image file!"
+        continue
+    fi
+
+    # Inserir Data
+    temp="${arg:0:$count}.png"
+    if [[ -f $temp ]]; then
+        echo "Error: '$temp' already exists!" >> /tmp/"log-svg2png-$today"
+        gdialog --msgbox "Error: '$temp' already exists!"
+    else
+        echo "Converting..." >> /tmp/"log-svg2png-$today"
+        $(inkscape -z "$arg" --export-png="$temp")
+        echo "New: $temp" >> /tmp/"log-svg2png-$today"
+    fi
+done
+
+# gdialog --title "Remove" --center --stdout --yesno \
+# "Remove original files (y/n)?" \
+# 0 0
+
+# if [[ "$?" = "1" ]]; then
+#       exit 0
+# fi
+
+# # Remover arquivos
+# for arg
+# do
+#     echo "Removing: $arg" >> /tmp/"log-svg2png-$today"
+#     rm "$arg"
+# done
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-svg2png-$today"
+exit 0

@@ -1,0 +1,64 @@
+#!/bin/bash
+# Converte arquivo imagem para PDF
+# Requer Zenity e ImageMagick
+
+arg="$@"    # argumentos de entrada
+today=$(date +%Y-%m-%d)
+ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
+output="ARQUIVO_PDF-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
+
+gdialog --title "Script" --center --stdout --yesno \
+"Executar: img2pdf" \
+100 100
+
+if [[ "$?" != "0" ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-img2pdf-$today"
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-img2pdf-$today"
+    gdialog --msgbox "Select Files!"
+    exit 0
+fi
+
+# Percorrendo os argumentos de entrada
+temp=""
+for arg
+do
+    size=${#arg}
+    count=$size
+
+    # Procurando extensão
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '.' ]]; then
+            break;
+        fi
+    done
+
+    # Checar extensão
+    ext_temp="${arg:count:size - count}"  
+    for ext in ${ext_array[@]}; do
+        if [[ $ext_temp == ".$ext" ]]; then
+            echo "Image file: $arg OK" >> /tmp/"log-img2pdf-$today"
+            temp="$temp $arg"
+            break
+        fi
+    done
+done
+
+# Inserir Data
+if [[ -f $output ]]; then
+    echo "Error: '$output' already exists!" >> /tmp/"log-img2pdf-$today"
+    gdialog --msgbox "Error: '$output' already exists!"
+else
+    echo "Converting..." >> /tmp/"log-img2pdf-$today"
+    $(convert $temp $output)
+    echo "Output: $output" >> /tmp/"log-img2pdf-$today"
+fi
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-img2pdf-$today"
+exit 0
