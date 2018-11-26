@@ -7,7 +7,7 @@ today=$(date +%Y-%m-%d)
 ext_original=".SVG"
 
 # gdialog --title "Script" --center --stdout --yesno \
-# "Executar: svg2png" \
+# "Execute: svg2png" \
 # 100 100
 
 # if [[ "$?" != "0" ]]; then

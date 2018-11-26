@@ -5,10 +5,10 @@
 arg="$@"    # argumentos de entrada
 today=$(date +%Y-%m-%d)
 ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
-output="ARQUIVO_PDF-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
+output="NEW_PDF-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
 
 gdialog --title "Script" --center --stdout --yesno \
-"Executar: img2pdf" \
+"Execute: img2pdf" \
 100 100
 
 if [[ "$?" != "0" ]]; then

@@ -7,7 +7,7 @@ today=$(date +%Y-%m-%d)
 ext_original=".JPG"
 
 # gdialog --title "Script" --center --stdout --yesno \
-# "Executar: jpg2png" \
+# "Execute: jpg2png" \
 # 100 100
 
 # if [[ "$?" != "0" ]]; then
