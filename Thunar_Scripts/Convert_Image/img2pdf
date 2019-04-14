@@ -11,7 +11,7 @@ ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
 
 # Confirmando ação
 gdialog --title "Script" --center --stdout --yesno \
-"Executar: img2pdf" \
+"Execute: img2pdf" \
 100 100
 
 # Escrevendo arquivo de log
