@@ -2,18 +2,17 @@
 # Converte arquivo imagem para PDF
 # Requer Zenity e ImageMagick
 
-arg="$@"    # argumentos de entrada
+# argumentos de entrada
+arg="$@"        
+elements="$#"
+
 today=$(date +%Y-%m-%d)
 ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
-output="NEW_PDF-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
 
+# Confirmando ação
 gdialog --title "Script" --center --stdout --yesno \
-"Execute: img2pdf" \
+"Executar: img2pdf" \
 100 100
-
-if [[ "$?" != "0" ]]; then
-      exit 0
-fi
 
 # Escrevendo arquivo de log
 echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-img2pdf-$today"
@@ -29,6 +28,7 @@ fi
 temp=""
 for arg
 do
+    # argumento
     size=${#arg}
     count=$size
 
@@ -40,17 +40,29 @@ do
     done
 
     # Checar extensão
-    ext_temp="${arg:count:size - count}"  
+    ext_temp="${arg:count:size - count}"
+    name="PDF"  # padrão para mais de um arquivo
     for ext in ${ext_array[@]}; do
         if [[ $ext_temp == ".$ext" ]]; then
             echo "Image file: $arg OK" >> /tmp/"log-img2pdf-$today"
             temp="$temp $arg"
+            # nome do arquivo
+            if [[ $elements -eq 1 ]]; then
+                last=$count
+                while [[ $count -ge 0 ]]; do
+                    if [[ ${arg:((--count)):1} = '/' ]]; then
+                        break;
+                    fi
+                done
+                name="${arg:count + 1:last - count - 1}" 
+            fi
             break
         fi
     done
 done
 
 # Inserir Data
+output="$name-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
 if [[ -f $output ]]; then
     echo "Error: '$output' already exists!" >> /tmp/"log-img2pdf-$today"
     gdialog --msgbox "Error: '$output' already exists!"
