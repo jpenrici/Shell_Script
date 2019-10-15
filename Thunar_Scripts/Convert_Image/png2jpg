@@ -1,35 +1,46 @@
 #!/bin/bash
 # Converte arquivo imagem PNG para JPG
 # Requer Zenity e ImageMagick
+# 2019
 
-arg="$@"    # argumentos de entrada
+# argumentos de entrada
+arg="$@"
+script=$(basename $0)
 today=$(date +%Y-%m-%d)
-ext_original=".PNG"
-
-# gdialog --title "Script" --center --stdout --yesno \
-# "Execute: png2jpg" \
-# 100 100
-
-# if [[ "$?" != "0" ]]; then
-#       exit 0
-# fi
-
-# Escrevendo arquivo de log
-echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-png2jpg-$today"
 
 # Checar argumento
 if [[ "$arg" = "" ]]; then
-    echo "Empty argument!" >> /tmp/"log-png2jpg-$today"
-    gdialog --msgbox "Select Files!"
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
     exit 0
 fi
+
+# detalhes iniciais
+ext_original=(".PNG")
+ext_output="jpg"
+extra="-quality 90"
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
 
 # Percorrendo os argumentos de entrada
 for arg
 do
     size=${#arg}
     count=$size
-    echo "Renaming: $arg" >> /tmp/"log-png2jpg-$today"
+    echo "Convert: $arg" >> /tmp/"log-$script-$today"
 
     # Procurando extensão
     while [[ $count -ge 0 ]]; do
@@ -40,39 +51,42 @@ do
 
     # Checar extensão
     ext_temp=$(echo "${arg:count:size - count}" | tr '[:lower:]' '[:upper:]')
-    echo "Image file: " >> /tmp/"log-png2jpg-$today"
-    if [[ $ext_temp != $ext_original ]]; then
-        echo "Invalid image file!" >> /tmp/"log-png2jpg-$today"
-        gdialog --msgbox "Invalid image file!"
-        exit 0
+    if [[ $ext_temp != ${ext_original[0]} && $ext_temp != ${ext_original[1]} ]]; then
+        echo "Invalid image file!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Invalid image file!"        
+        continue
     fi
 
     # Inserir Data
-    temp="${arg:0:$count}.jpg"
+    temp="${arg:0:$count}.$ext_output"
     if [[ -f $temp ]]; then
-        echo "Error: '$temp' already exists!" >> /tmp/"log-png2jpg-$today"
-        gdialog --msgbox "Error: '$temp' already exists!"
+        echo "Error: '$temp' already exists!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Error: '$temp' already exists!"
     else
-        echo "Converting..." >> /tmp/"log-png2jpg-$today"
-        $(convert "$arg" "$temp")
-        echo "New: $temp" >> /tmp/"log-png2jpg-$today"
+        echo "Converting..." >> /tmp/"log-$script-$today"
+        # zenity --info --text="convert $arg $extra $temp"
+        $(convert "$arg" $extra "$temp")
+        echo "New: $temp" >> /tmp/"log-$script-$today"
     fi
 done
 
-gdialog --title "Remove" --center --stdout --yesno \
-"Remove original files (y/n)?" \
-0 0
-
-if [[ "$?" = "1" ]]; then
-      exit 0
-fi
-
 # Remover arquivos
-for arg
-do
-    echo "Removing: $arg" >> /tmp/"log-png2jpg-$today"
-    rm "$arg"
-done
+# zenity --question \
+# --title="Remove" \
+# --text="Remove original files?" \
+# --ok-label="Yes" \
+# --cancel-label="No"
+# temp=$?
 
-echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-png2jpg-$today"
+# if [[ $temp -eq 1 ]]; then
+#       exit 0
+# fi
+
+# for arg
+# do
+#     echo "Removing: $arg" >> /tmp/"log-$script-$today"
+#     rm "$arg"
+# done
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
 exit 0

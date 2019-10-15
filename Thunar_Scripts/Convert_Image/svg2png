@@ -1,35 +1,46 @@
 #!/bin/bash
 # Converte arquivo imagem SVG para PNG
-# Requer Zenity e Inkscape
+# Requer Zenity e ImageMagick
+# 2019
 
-arg="$@"    # argumentos de entrada
+# argumentos de entrada
+arg="$@"
+script=$(basename $0)
 today=$(date +%Y-%m-%d)
-ext_original=".SVG"
-
-# gdialog --title "Script" --center --stdout --yesno \
-# "Execute: svg2png" \
-# 100 100
-
-# if [[ "$?" != "0" ]]; then
-#       exit 0
-# fi
-
-# Escrevendo arquivo de log
-echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-svg2png-$today"
 
 # Checar argumento
 if [[ "$arg" = "" ]]; then
-    echo "Empty argument!" >> /tmp/"log-svg2png-$today"
-    gdialog --msgbox "Select Files!"
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
     exit 0
 fi
+
+# detalhes iniciais
+ext_original=(".SVG")
+ext_output="png"
+extra=""
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
 
 # Percorrendo os argumentos de entrada
 for arg
 do
     size=${#arg}
     count=$size
-    echo "Convert: $arg" >> /tmp/"log-svg2png-$today"
+    echo "Convert: $arg" >> /tmp/"log-$script-$today"
 
     # Procurando extensão
     while [[ $count -ge 0 ]]; do
@@ -40,38 +51,42 @@ do
 
     # Checar extensão
     ext_temp=$(echo "${arg:count:size - count}" | tr '[:lower:]' '[:upper:]')
-    if [[ $ext_temp != $ext_original ]]; then
-        echo "Invalid image file!" >> /tmp/"log-svg2png-$today"
-        gdialog --msgbox "Invalid image file!"
+    if [[ $ext_temp != ${ext_original[0]} && $ext_temp != ${ext_original[1]} ]]; then
+        echo "Invalid image file!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Invalid image file!"        
         continue
     fi
 
     # Inserir Data
-    temp="${arg:0:$count}.png"
+    temp="${arg:0:$count}.$ext_output"
     if [[ -f $temp ]]; then
-        echo "Error: '$temp' already exists!" >> /tmp/"log-svg2png-$today"
-        gdialog --msgbox "Error: '$temp' already exists!"
+        echo "Error: '$temp' already exists!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Error: '$temp' already exists!"
     else
-        echo "Converting..." >> /tmp/"log-svg2png-$today"
+        echo "Converting..." >> /tmp/"log-$script-$today"
+        # zenity --info --text="inkscape -z $arg --export-png=$temp"
         $(inkscape -z "$arg" --export-png="$temp")
-        echo "New: $temp" >> /tmp/"log-svg2png-$today"
+        echo "New: $temp" >> /tmp/"log-$script-$today"
     fi
 done
 
-# gdialog --title "Remove" --center --stdout --yesno \
-# "Remove original files (y/n)?" \
-# 0 0
+# Remover arquivos
+# zenity --question \
+# --title="Remove" \
+# --text="Remove original files?" \
+# --ok-label="Yes" \
+# --cancel-label="No"
+# temp=$?
 
-# if [[ "$?" = "1" ]]; then
+# if [[ $temp -eq 1 ]]; then
 #       exit 0
 # fi
 
-# # Remover arquivos
 # for arg
 # do
-#     echo "Removing: $arg" >> /tmp/"log-svg2png-$today"
+#     echo "Removing: $arg" >> /tmp/"log-$script-$today"
 #     rm "$arg"
 # done
 
-echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-svg2png-$today"
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
 exit 0

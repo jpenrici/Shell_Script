@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Action
+Name[en]=PNG -> JPG
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+MimeType=image/jpeg;image/jpg;image/png;image/svg;
+Exec=~/Thunar_Scripts/Convert_Image/png2jpg %F

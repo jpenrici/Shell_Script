@@ -1,28 +1,39 @@
 #!/bin/bash
 # Converte arquivo imagem para PDF
 # Requer Zenity e ImageMagick
+# 2019
 
 # argumentos de entrada
-arg="$@"        
-elements="$#"
-
+arg="$@"
+script=$(basename $0)
 today=$(date +%Y-%m-%d)
-ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
-
-# Confirmando ação
-gdialog --title "Script" --center --stdout --yesno \
-"Execute: img2pdf" \
-100 100
-
-# Escrevendo arquivo de log
-echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-img2pdf-$today"
 
 # Checar argumento
 if [[ "$arg" = "" ]]; then
-    echo "Empty argument!" >> /tmp/"log-img2pdf-$today"
-    gdialog --msgbox "Select Files!"
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
     exit 0
 fi
+
+# detalhes iniciais
+elements="$#"
+local=$(dirname $1)
+ext_array=("PNG" "png" "JPG" "jpg" "svg" "SVG")
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
 
 # Percorrendo os argumentos de entrada
 temp=""
@@ -44,7 +55,7 @@ do
     name="PDF"  # padrão para mais de um arquivo
     for ext in ${ext_array[@]}; do
         if [[ $ext_temp == ".$ext" ]]; then
-            echo "Image file: $arg OK" >> /tmp/"log-img2pdf-$today"
+            echo "Image file: $arg OK" >> /tmp/"log-$script-$today"
             temp="$temp $arg"
             # nome do arquivo
             if [[ $elements -eq 1 ]]; then
@@ -54,7 +65,7 @@ do
                         break;
                     fi
                 done
-                name="${arg:count + 1:last - count - 1}" 
+                name="${arg:count + 1:last - count - 1}"
             fi
             break
         fi
@@ -62,15 +73,16 @@ do
 done
 
 # Inserir Data
-output="$name-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
+output="$local/$name-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
 if [[ -f $output ]]; then
-    echo "Error: '$output' already exists!" >> /tmp/"log-img2pdf-$today"
-    gdialog --msgbox "Error: '$output' already exists!"
+    echo "Error: '$output' already exists!" >> /tmp/"log-$script-$today"
+    zenity --error --text="Error: '$output' already exists!"
 else
-    echo "Converting..." >> /tmp/"log-img2pdf-$today"
+    echo "Converting..." >> /tmp/"log-$script-$today"
+    # zenity --info --text="convert $temp $output"
     $(convert $temp $output)
-    echo "Output: $output" >> /tmp/"log-img2pdf-$today"
+    echo "Output: $output" >> /tmp/"log-$script-$today"
 fi
 
-echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-img2pdf-$today"
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
 exit 0
