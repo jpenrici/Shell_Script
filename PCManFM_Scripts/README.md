@@ -4,4 +4,4 @@ Use Thunar scripts in PCManFm.
 
 **install**
 
-cp -r PCManFM/file-manager/ ~/.local/share/
+cp -r PCManFM_Scripts/file-manager/ ~/.local/share/
