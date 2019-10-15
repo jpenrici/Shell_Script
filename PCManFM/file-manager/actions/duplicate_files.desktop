@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Action
+Name=Duplicate Files
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+MimeTypes=all/allfiles;
+Exec=~/Thunar_Scripts/duplicate_files %F

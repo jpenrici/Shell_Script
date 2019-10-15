@@ -1,0 +1,36 @@
+#!/bin/bash
+# Duplica Arquivos
+# Requer Zenity
+# 2019
+
+arg="$@"
+local=$(dirname $1)
+
+if [[ "$arg" = "" ]]; then
+    zenity --info --text="Select Files!"
+    exit 0
+fi
+
+for arg
+do
+    size=${#arg}
+    count=$size
+
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '.' ]]; then
+            break;
+        fi
+    done
+
+	ext="${arg:count:size - count}"
+    last=$count
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '/' ]]; then
+            break;
+        fi
+    done
+
+    name="${arg:count + 1:last - count - 1}"
+    arq="$local/Copy-$name$ext"
+    cp "$arg" "$arq" &
+done 
