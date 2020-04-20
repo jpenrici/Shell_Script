@@ -73,7 +73,8 @@ do
 done
 
 # Inserir Data
-output="$local/$name-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
+# output="$local/$name-$(date '+%Y-%m-%d_%H:%M:%S').pdf"
+output="$local/$name-$(date '+%Y-%m-%d_%H%M%S').pdf"
 if [[ -f $output ]]; then
     echo "Error: '$output' already exists!" >> /tmp/"log-$script-$today"
     zenity --error --text="Error: '$output' already exists!"
