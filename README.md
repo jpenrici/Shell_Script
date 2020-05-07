@@ -14,7 +14,8 @@ Experiments and tests in Shell Script.
 	- svg2png.desktop
 
 **Thunar_Scripts**
-	- duplicate_files
+
+duplicate_files
 
 1. **Convert_Image**
 	- img2pdf
