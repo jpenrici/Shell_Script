@@ -7,7 +7,7 @@ Experiments and tests in Shell Script.
 **PCManFM_Scripts**
 
 1. **file-manager**
-**actions**
+- **actions**
 	- duplicate_files.desktop
 	- img2pdf.desktop
 	- jpg2png.desktop
@@ -25,7 +25,7 @@ Experiments and tests in Shell Script.
 
 2. **Remove_Files**
 	- remove_files.sh
-	
+
 3. **Rename_Filename**
 	- rename_insert_date.sh
 	- thunar-script-config.png
