@@ -7,12 +7,12 @@ Experiments and tests in Shell Script.
 **PCManFM_Scripts**
 
 1. **file-manager**
-	**actions**
-		- duplicate_files.desktop
-		- img2pdf.desktop
-		- jpg2png.desktop
-		- png2jpg.desktop
-		- svg2png.desktop
+**actions**
+	- duplicate_files.desktop
+	- img2pdf.desktop
+	- jpg2png.desktop
+	- png2jpg.desktop
+	- svg2png.desktop
 
 **Thunar_Scripts**
 	- duplicate_files
