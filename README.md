@@ -6,8 +6,7 @@ Experiments and tests in Shell Script.
 
 **PCManFM_Scripts**
 
-1. **file-manager**
-- **actions**
+1. **file-manager/actions**
 	- duplicate_files.desktop
 	- img2pdf.desktop
 	- jpg2png.desktop
@@ -15,6 +14,7 @@ Experiments and tests in Shell Script.
 	- svg2png.desktop
 
 **Thunar_Scripts**
+
 	- duplicate_files
 
 1. **Convert_Image**
