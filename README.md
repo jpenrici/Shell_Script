@@ -15,17 +15,22 @@ Experiments and tests in Shell Script.
 
 **Thunar_Scripts**
 
-duplicate_files
+1. **Unique scripts**
+	- duplicate_files
 
-1. **Convert_Image**
+2. **Convert_Image**
 	- img2pdf
 	- jpg2png
 	- png2jpg
 	- svg2png
 
-2. **Remove_Files**
+3. **Remove_Files**
 	- remove_files.sh
 
-3. **Rename_Filename**
+4. **Rename_Filename**
 	- rename_insert_date.sh
 	- thunar-script-config.png
+
+**Others Scripts**
+
+1. change_pdf_metadata.sh
