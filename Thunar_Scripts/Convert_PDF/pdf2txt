@@ -1,0 +1,74 @@
+#!/bin/bash
+# Converte PDF em Texto sem formatação
+# Requer
+#        Zenity
+#        poppler-utils
+# 2020
+
+# Argumentos de entrada
+arg="$@"
+script=$(basename $0)
+today=$(date '+%Y-%m-%d')
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
+    exit 0
+fi
+
+# Detalhes iniciais
+ext_original=(".PDF" ".pdf")
+ext_output="txt"
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
+
+# Percorrendo os argumentos de entrada
+for arg
+do
+    size=${#arg}
+    count=$size
+    echo "Extract: $arg" >> /tmp/"log-$script-$today"
+
+    # Procurando extensão
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '.' ]]; then
+            break;
+        fi
+    done
+
+    # Checar extensão
+    ext_temp=$(echo "${arg:count:size - count}" | tr '[:lower:]' '[:upper:]')
+    if [[ $ext_temp != ${ext_original[0]} && $ext_temp != ${ext_original[1]} ]]; then
+        echo "Invalid file!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Invalid file!"        
+        continue
+    fi
+
+    # Executar pdftotext
+    temp="${arg:0:$count}.$ext_output"
+    if [[ -f $temp ]]; then
+        echo "Error: '$temp' already exists!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Error: '$temp' already exists!"
+    else
+        echo "Extract Text..." >> /tmp/"log-$script-$today"
+        $(pdftotext "$arg" "$temp")
+        echo "New: $temp" >> /tmp/"log-$script-$today"
+    fi
+done
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
+exit 0

@@ -24,13 +24,16 @@ Experiments and tests in Shell Script.
 	- png2jpg
 	- svg2png
 
-3. **Remove_Files**
+3. **Convert_PDF**
+	- pdf2txt
+
+4. **Remove_Files**
 	- remove_files.sh
 
-4. **Rename_Filename**
+5. **Rename_Filename**
 	- rename_insert_date.sh
 	- thunar-script-config.png
 
 **Others Scripts**
 
-1. change_pdf_metadata.sh
+1. change_metadata_pdf.sh
