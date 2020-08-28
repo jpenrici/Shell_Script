@@ -26,6 +26,7 @@ Experiments and tests in Shell Script.
 
 3. **Convert_PDF**
 	- pdf2txt
+	- pdf2png
 
 4. **Remove_Files**
 	- remove_files.sh
