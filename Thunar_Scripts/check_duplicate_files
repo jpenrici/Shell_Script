@@ -1,0 +1,80 @@
+#!/bin/bash
+# Verificar se existe arquivos duplicados
+# Requer zenity (Display graphical dialog boxes) instalado
+# Teste executado com Bash no Debian
+
+arg="$1"	# argumento de entrada
+today=$(date +%Y-%m-%d)
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$today"
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-$today"
+    gdialog --msgbox "Select only one file as search!"
+    exit 0
+fi
+
+# Iniciar
+echo "File: $arg"
+
+# Procurando extensão
+size=${#arg}
+count=$size
+pos=0
+while [[ $count -ge 0 ]]; do
+    if [[ ${arg:((--count)):1} = '.' ]]; then
+    	pos=$count
+        break;
+    fi
+done
+
+rootDir=$PWD
+name="${arg:0:count}"
+ext="undefined type"
+out="$rootDir/searchfor-$name"
+
+if [[ $pos -ge 0 ]]; then
+	ext="${arg:pos+1:size-pos}"
+fi
+
+echo "Filename : $name"
+echo "Extension: $ext"
+echo "Directory: $rootDir"
+
+# Pesquisar
+echo "Processing search. Wait ..."
+started="Started [ $(date '+%Y-%m-%d %H:%M:%S') ]."
+
+echo "Candidates by name:"
+result=($(find $rootDir -iname "$name.$ext"))
+list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+for i in ${list[@]}; do
+	echo $i
+done
+
+echo "Candidates by type:"
+result+=($(find $rootDir -iname "*.$ext"))
+list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+for i in ${list[@]}; do
+	echo $i
+done
+
+echo "Duplicates:"
+result=($(find $rootDir -name "*.$ext" -exec md5sum {} \; | sort | uniq --all-repeated=separate -w 33 | cut -c 35-))
+list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+# Resultado principal
+touch $out
+echo "Possibly duplicate files:" > $out
+for i in ${list[@]}; do
+	echo $i
+	echo $i >> $out
+done
+echo $started >> $out
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> $out
+
+# Sair
+gdialog --msgbox "Check: $out"
+exit 0 
