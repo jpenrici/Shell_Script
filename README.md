@@ -17,6 +17,7 @@ Experiments and tests in Shell Script.
 
 1. **Unique scripts**
 	- duplicate_files
+	- check_duplicate_files
 
 2. **Convert_Image**
 	- img2pdf
