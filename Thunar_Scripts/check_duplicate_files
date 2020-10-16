@@ -3,78 +3,82 @@
 # Requer zenity (Display graphical dialog boxes) instalado
 # Teste executado com Bash no Debian
 
-arg="$1"	# argumento de entrada
+script="$(basename $0)"
 today=$(date +%Y-%m-%d)
+result=""
 
-# Escrevendo arquivo de log
-echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$today"
+# Log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
 
 # Checar argumento
-if [[ "$arg" = "" ]]; then
-    echo "Empty argument!" >> /tmp/"log-$today"
-    gdialog --msgbox "Select only one file as search!"
+echo "Input: $1"
+if [[ "$1" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select only one file!"
     exit 0
 fi
 
-# Iniciar
-echo "File: $arg"
-
-# Procurando extensão
+# Procurar extensão
+arg="$(basename $1)"
 size=${#arg}
 count=$size
-pos=0
 while [[ $count -ge 0 ]]; do
     if [[ ${arg:((--count)):1} = '.' ]]; then
-    	pos=$count
         break;
     fi
 done
 
+# Dados
 rootDir=$PWD
-name="${arg:0:count}"
-ext="undefined type"
-out="$rootDir/searchfor-$name"
+name="$arg"
+ext=""
+if [[ $count -ge 0 ]]; then
+    name="${arg:0:count}"
+    ext="${arg:count:size-count}"
+fi
+out="$rootDir/$script-result-$today"
 
-if [[ $pos -ge 0 ]]; then
-	ext="${arg:pos+1:size-pos}"
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script\nSearch: $name$ext" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+    echo "Closed by user!" >> /tmp/"log-$script-$today"
+    exit 0
 fi
 
-echo "Filename : $name"
-echo "Extension: $ext"
-echo "Directory: $rootDir"
-
 # Pesquisar
+echo "$script ..."
 echo "Processing search. Wait ..."
 started="Started [ $(date '+%Y-%m-%d %H:%M:%S') ]."
 
-echo "Candidates by name:"
-result=($(find $rootDir -iname "$name.$ext"))
-list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-for i in ${list[@]}; do
-	echo $i
-done
-
-echo "Candidates by type:"
-result+=($(find $rootDir -iname "*.$ext"))
-list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-for i in ${list[@]}; do
-	echo $i
-done
-
 echo "Duplicates:"
-result=($(find $rootDir -name "*.$ext" -exec md5sum {} \; | sort | uniq --all-repeated=separate -w 33 | cut -c 35-))
-list=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+# [find md5sum]
+# 1607cafdb47fa1db1dabdac36d64f4cb  ./test.txt
+# [sort | uniq | cut]       =>      ./test.txt (result)
+result=($(find $rootDir -type f -iname "*$name*$ext" -exec md5sum {} \; | sort | uniq --all-repeated=separate -w 33 | cut -c 35-))
+result=($(echo "${result[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-# Resultado principal
+# Output
 touch $out
-echo "Possibly duplicate files:" > $out
-for i in ${list[@]}; do
-	echo $i
-	echo $i >> $out
+echo "# Filename : \"$name\"" > $out
+echo "# Extension: \"$ext\"" >> $out
+echo "# Directory: $rootDir" >> $out
+echo "# Possibly Duplicate Files" >> $out
+for i in ${result[@]}; do
+    echo $i
+    echo $i >> $out
 done
+echo "" >> $out
 echo $started >> $out
 echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> $out
 
 # Sair
-gdialog --msgbox "Check: $out"
-exit 0 
+zenity --info --text="Check: $out"
+echo "$script ... ok" >> /tmp/"log-$script-$today"
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
+exit 0
