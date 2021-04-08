@@ -1,0 +1,92 @@
+#!/bin/bash
+# Converte arquivo imagem PNG para BMP
+# Requer Zenity e ImageMagick
+# 2021
+
+# argumentos de entrada
+arg="$@"
+script=$(basename $0)
+today=$(date +%Y-%m-%d)
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
+    exit 0
+fi
+
+# detalhes iniciais
+ext_original=(".PNG")
+ext_output="bmp"
+extra=""
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [[ $temp -eq 1 ]]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
+
+# Percorrendo os argumentos de entrada
+for arg
+do
+    size=${#arg}
+    count=$size
+    echo "Convert: $arg" >> /tmp/"log-$script-$today"
+
+    # Procurando extensão
+    while [[ $count -ge 0 ]]; do
+        if [[ ${arg:((--count)):1} = '.' ]]; then
+            break;
+        fi
+    done
+
+    # Checar extensão
+    ext_temp=$(echo "${arg:count:size - count}" | tr '[:lower:]' '[:upper:]')
+    if [[ $ext_temp != ${ext_original[0]} && $ext_temp != ${ext_original[1]} ]]; then
+        echo "Invalid image file!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Invalid image file!"        
+        continue
+    fi
+
+    # Inserir Data
+    temp="${arg:0:$count}.$ext_output"
+    if [[ -f $temp ]]; then
+        echo "Error: '$temp' already exists!" >> /tmp/"log-$script-$today"
+        zenity --error --text="Error: '$temp' already exists!"
+    else
+        echo "Converting..." >> /tmp/"log-$script-$today"
+        # zenity --info --text="convert $arg $extra $temp"
+        $(convert "$arg" $extra "$temp")
+        echo "New: $temp" >> /tmp/"log-$script-$today"
+    fi
+done
+
+# Remover arquivos
+# zenity --question \
+# --title="Remove" \
+# --text="Remove original files?" \
+# --ok-label="Yes" \
+# --cancel-label="No"
+# temp=$?
+
+# if [[ $temp -eq 1 ]]; then
+#       exit 0
+# fi
+
+# for arg
+# do
+#     echo "Removing: $arg" >> /tmp/"log-$script-$today"
+#     rm "$arg"
+# done
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
+exit 0
