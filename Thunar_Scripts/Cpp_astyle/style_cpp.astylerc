@@ -1,0 +1,13 @@
+# Cpp Style 
+
+--style=stroustrup
+--indent=spaces=4
+--indent-preprocessor
+--indent-col1-comments
+--pad-oper
+--unpad-paren
+--pad-header
+--align-pointer=name
+--align-reference=name
+--add-brackets
+--convert-tabs
