@@ -37,6 +37,9 @@ Experiments and tests in Shell Script.
 	- rename_insert_date.sh
 	- thunar-script-config.png
 
+6. **Cpp_astyle**
+	- cpp_astyle_formatter
+
 **Others Scripts**
 
 1. change_metadata_pdf.sh
