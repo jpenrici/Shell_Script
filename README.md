@@ -25,6 +25,7 @@ Experiments and tests in Shell Script.
 	- png2jpg
 	- png2bmp
 	- svg2png
+	- svg2pdf
 
 3. **Convert_PDF**
 	- pdf2txt
