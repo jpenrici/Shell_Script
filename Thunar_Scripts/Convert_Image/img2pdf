@@ -1,7 +1,7 @@
 #!/bin/bash
 # Converte arquivo imagem para PDF
-# Requer Zenity e ImageMagick
-# 2019
+# Requer Zenity e img2pdf (https://gitlab.mister-muffin.de/josch/img2pdf)
+# 2021
 
 # argumentos de entrada
 arg="$@"
@@ -79,9 +79,10 @@ if [[ -f $output ]]; then
     echo "Error: '$output' already exists!" >> /tmp/"log-$script-$today"
     zenity --error --text="Error: '$output' already exists!"
 else
-    echo "Converting..." >> /tmp/"log-$script-$today"
     # zenity --info --text="convert $temp $output"
-    $(convert $temp $output)
+    echo "Converting..." >> /tmp/"log-$script-$today"
+    # $(convert $temp $output)  # ImageMagick (alternativa antiga)
+    $(img2pdf $temp -o $output)
     echo "Output: $output" >> /tmp/"log-$script-$today"
 fi
 
