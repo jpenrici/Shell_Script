@@ -1,0 +1,71 @@
+#!/bin/sh
+# Procurar arquivo por filtro e renomeando sem espaços.
+# Requer Zenity 
+#
+# Exemplo:
+#           '/home/user/test/a a _-_ a1.txt' -> '/home/user/test/a_a-a1.txt'
+#
+# Teste Debian
+# 2021
+
+# argumentos de entrada
+arg="$@"
+script=$(basename $0)
+today=$(date +%Y-%m-%d)
+
+# Checar argumento
+if [[ "$arg" = "" ]]; then
+    echo "Empty argument!" >> /tmp/"log-$script-$today"
+    zenity --info --text="Select Files!"
+    exit 0
+fi
+
+# Confirmando ação
+zenity --question \
+--title="Script" \
+--text="Execute: $script" \
+--ok-label="Yes" \
+--cancel-label="No"
+temp=$?
+
+if [ $temp -eq 1 ]; then
+      exit 0
+fi
+
+# Escrevendo arquivo de log
+echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
+
+# Seletor
+word="* *"
+
+# Percorrendo os argumentos de entrada
+for arg
+do
+  if [ -d $arg ]; then
+    # Filtrar por seletor
+    find $arg -type f -name "$word" | while read item
+      do
+        # Original
+        filename=$(basename "$item")
+        dirname=$(echo "$item" | sed "s/$filename//g")
+        path=$(echo "$dirname$filename")
+        # Preparar
+        output=$(echo "$filename" | tr '[ ]' '[_]')
+        output=$(echo "$output" | tr -s '_')
+        output=$(echo "$output" | sed "s/"_-_"/"-"/g")
+        output=$(echo "$dirname$output")
+        # Renomear
+        if [ -f $output ]; then
+          echo "Error: '$output' already exists!" >> /tmp/"log-$script-$today"
+          zenity --error --text="Error: '$output' already exists!"
+        else
+          mv -v "$path" "$output" >> /tmp/"log-$script-$today"
+        fi
+      done
+  fi
+done
+
+echo "Finished [ $(date '+%Y-%m-%d %H:%M:%S') ]." >> /tmp/"log-$script-$today"
+zenity --info --text="Finished !"
+
+exit 0
