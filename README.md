@@ -34,6 +34,7 @@ Experiments and tests in Shell Script.
 
 4. **Remove_Files**
 	- remove_files.sh
+	- rename_special
 
 5. **Rename_Filename**
 	- rename_insert_date.sh
