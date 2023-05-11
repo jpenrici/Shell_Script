@@ -46,3 +46,8 @@ Experiments and tests in Shell Script.
 **Others Scripts**
 
 1. change_metadata_pdf.sh
+
+
+**XFCE4_Scripts**
+
+Some scripts that might be useful!
