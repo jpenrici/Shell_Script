@@ -44,10 +44,14 @@ for path in "${arr[@]}"; do
         for i in $(find "$path" -print); do
             if [[ -d "$i" ]]; then
                 for j in $(ls -a $i); do
-                    if [[ -f "$i/$j" ]]; then
-                        file=($(ls -la --time-style=full-iso "$i/$j"))
+                    fullPath="$i/$j"
+                    if [[ -f  $fullPath ]]; then
+                        file=($(ls -la --time-style=full-iso $fullPath))
+                        filename=$(basename -- "$fullPath")
+                        filename="${filename%.*}"
+                        extension=$(echo $j | sed 's/'$filename'//g')
                         echo ${file[5]} $j "..."
-                        echo ${file[5]}$delimiter$j$delimiter$i >> $temp
+                        echo "${file[5]}""$delimiter$j""$delimiter$extension""$delimiter$i" >> $temp
                     fi
                 done
             fi
@@ -59,7 +63,7 @@ for path in "${arr[@]}"; do
 done
 
 # Organizar e salvar
-echo "time$delimiter""files$delimiter""directories" > $output
+echo "time$delimiter""file$delimiter""extension$delimiter""directories" > $output
 sort $temp >> $output
 echo "Save in: $output"
 
