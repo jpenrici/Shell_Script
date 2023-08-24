@@ -16,8 +16,9 @@ Experiments and tests in Shell Script.
 **Thunar_Scripts**
 
 1. **Unique scripts**
-	- duplicate_files
 	- check_duplicate_files
+	- dirs2csv
+	- duplicate_files
 	- list_url_text-file.sh
 
 2. **Convert_Image**
