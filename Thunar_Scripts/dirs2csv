@@ -2,13 +2,23 @@
 # Simples script para listar arquivos e relacionar com diretórios, salvando em CSV.
 # Requer: Zenity
 # 2023
+#
+# Usar: dirs2csv path1 path2 filter=extension_1,extension_2
 
 # Argumentos de entrada
 arg="$@"
+
 script=$(basename $0)
 today=$(date +%Y-%m-%d)
 now=$(date +%Y-%m-%d-%H:%M:%S)
 output="list_$now.csv"
+
+## Test
+#path="$HOME/Downloads/test"
+#output="$path/result.csv"
+#if [[ ! -d $path ]]; then mkdir $path; fi
+#touch $path/test.{c,cpp,h,hpp,html,js,sh,txt}
+#arg="$path filter=cpp,hpp something filter=h another thing"
 
 # Checar argumento
 if [[ "$arg" = "" ]]; then
@@ -32,38 +42,59 @@ fi
 # Escrevendo arquivo de log
 echo "Started [ $(date '+%Y-%m-%d %H:%M:%S') ]." > /tmp/"log-$script-$today"
 
+# Iniciar
+paths=()
+filters=()
+args=($arg)
+
+# Checando opções
+for i in "${args[@]}"; do
+    if [[ "$i" =~ filter\=.* ]]; then
+        i=$(echo $i | sed 's/filter=//g')
+        i=$(echo $i | sed 's/,/ /g')
+        filters+=("$i")
+    elif [[ -d $i ]]; then
+        paths+=("$i")
+    fi
+done
+
 # CSV
 delimiter=";"
 temp="/tmp/$script-bkp"
 echo -n "" > $temp
 
-# Percorrendo os argumentos de entrada
-arr=($arg)
-for path in "${arr[@]}"; do
-    if [[ -d "$path" ]]; then
-        for i in $(find "$path" -print); do
-            if [[ -d "$i" ]]; then
-                for j in $(ls -a $i); do
-                    fullPath="$i/$j"
-                    if [[ -f  $fullPath ]]; then
-                        file=($(ls -la --time-style=full-iso $fullPath))
-                        filename=$(basename -- "$fullPath")
-                        filename="${filename%.*}"
-                        extension=$(echo $j | sed 's/'$filename'//g')
+# Percorrendo lista de diretórios
+for path in "${paths[@]}"; do
+    # Pesquisar arquivos e diretórios internos
+    for i in $(find "$path" -print); do
+        # Selecionar diretórios
+        if [[ -d "$i" ]]; then
+            # Relistar arquivos e diretórios
+            for j in $(ls -a $i); do
+                fullPath="$i/$j"
+                # Selecionar arquivos
+                if [[ -f  $fullPath ]]; then
+                    # fullPath/filename.extension ...
+                    file=($(ls -la --time-style=full-iso $fullPath))
+                    # filename.extension
+                    filename=$(basename -- "$fullPath")
+                    # filename
+                    filename="${filename%.*}"
+                    # extension
+                    extension=$(echo $j | sed 's/'$filename\.'//g')
+                    # Se tiver filtros específicos ou nenhum filtro, salvar
+                    if [[ ${#filters[@]} -eq 0 || " ${filters[@]} " =~ " $extension " ]]; then
                         echo ${file[5]} $j "..."
                         echo "${file[5]}""$delimiter$j""$delimiter$extension""$delimiter$i" >> $temp
                     fi
-                done
-            fi
-        done
-    else
-        echo "Error when reading: $path" >> /tmp/"log-$script-$today"
-        zenity --info --title="Error!" --text="$path"     
-    fi
+                fi
+            done
+        fi
+    done
 done
 
 # Organizar e salvar
-echo "time$delimiter""file$delimiter""extension$delimiter""directories" > $output
+echo "time$delimiter""file$delimiter""extension$delimiter""directory" > $output
 sort $temp >> $output
 echo "Save in: $output"
 
