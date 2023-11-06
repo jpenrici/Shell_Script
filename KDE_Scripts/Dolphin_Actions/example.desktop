@@ -1,0 +1,9 @@
+[Desktop Entry]
+Actions=NameAction
+Type=Service
+MimeType=text/*;image/*;audio/*
+
+[Desktop Action NameAction]
+Name=Name Action
+Icon=debian-logo
+Exec=/bin/sh -c "dolphin"

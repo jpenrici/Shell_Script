@@ -1,0 +1,14 @@
+[Desktop Entry]
+Actions=InsertDate;RenameSpecial
+Type=Service
+MimeType=text/*;image/*;audio/*
+
+[Desktop Action InsertDate]
+Name=Insert Date
+Icon=debian-logo
+Exec=/bin/sh -c "~/Thunar_Scripts/rename_insert_date.sh %u"
+
+[Desktop Action RenameSpecial]
+Name=Rename special
+Icon=debian-logo
+Exec=/bin/sh -c "~/Thunar_Scripts/rename_special %u"

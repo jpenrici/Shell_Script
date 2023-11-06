@@ -4,6 +4,12 @@ Experiments and tests in Shell Script.
 
 ## Summary
 
+**KDE_Scripts**
+
+1. **Dolphin_Actions**
+	- customServiceMenu.desktop
+	- example.desktop
+
 **PCManFM_Scripts**
 
 1. **file-manager/actions**
